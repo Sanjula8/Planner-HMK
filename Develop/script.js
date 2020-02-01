@@ -1,6 +1,7 @@
 // DOM Elements
 
 var $currentDay = $("#currentDay");
+$(".clearBtn").html("Clear All");
 var $saveBtn = $(".saveBtn");
 var $hour9 = $("#hour-9");
 var $hour10 = $("#hour-10");
@@ -26,27 +27,57 @@ function clock() {
 clock();
 
 // Save To Local Storage
-
-// var saveData = JSON.parse(localStorage.saveData || null || {});
-
 // Store Data
 $(".saveBtn").on("click", function(e) {
 	e.preventDefault();
-	localStorage.setItem("input", JSON.stringify(input));
-	var input = $hour9.val();
+	var input = $(this)
+		.siblings(".description")
+		.val();
+	var key = $(this)
+		.siblings(".description")
+		.attr("id");
+	localStorage.setItem(key, input);
 	console.log(input);
 });
-// lastSave();
 
-// function lastSave() {
-// 	var savedThing = JSON.parse(localStorage.getItem("input"));
-// 	$hour9.text(savedThing);
-// }
+lastSave();
+
+function lastSave() {
+	for (let index = 1; index < 18; index++) {
+		var key = "hour-" + index;
+		var savedThing = localStorage.getItem(key);
+		var $hour = $("#hour-" + index);
+		$hour.val(savedThing);
+	}
+}
+
+function hourUpdater() {
+	$(".time").each(function() {
+		var textArea = $(this).children(".description");
+		var hour = parseInt(textArea.attr("id").split("-")[1]);
+		if (hour < currentHour) {
+			textArea.addClass("past");
+		} else if (hour === currentHour) {
+			textArea.removeClass("past");
+			textArea.addClass("present");
+		} else {
+			textArea.removeClass("past");
+			textArea.removeClass("present");
+			textArea.addClass("future");
+		}
+	});
+}
+
+hourUpdater();
 
 // Clear All
-// $(".clearBtn").on("click", function() {
-
-//     )}
+$(".clearBtn").on("click", function() {
+	$(".time").each(function() {
+		var textArea = $(this).children(".description");
+		textArea.val("");
+	});
+	localStorage.clear();
+});
 
 // Set Time Increments
 
